@@ -197,7 +197,15 @@ public class ReservaService {
 
   public void conclude() {
     var limit = LocalDateTime.now(clock).minusMinutes(1);
-    for (var r : repo.vencidas(limit.toLocalDate(), limit.toLocalTime()))
-      r.setStatusReserva(statuses.reserva("CONCLUIDA"));
+    var data = limit.toLocalDate();
+    var hora = limit.toLocalTime();
+
+    for (var r : repo.vencidas(data)) {
+      var finalReserva = r.getDataFinal().atTime(r.getHoraFinal());
+
+      if (!finalReserva.isAfter(limit)) {
+        r.setStatusReserva(statuses.reserva("CONCLUIDA"));
+      }
+    }
   }
 }
